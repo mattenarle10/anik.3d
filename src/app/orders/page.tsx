@@ -154,22 +154,47 @@ const OrdersPage = () => {
   
   // Helper function to check if an item is customized
   const isCustomizedItem = (productName?: string, item?: ExtendedOrderItem): boolean => {
-    if (!productName) return false;
-    if (productName.toLowerCase().includes('custom') || productName.toLowerCase().includes('customized')) return true;
-    if (item?.customization_details && item.customization_details.length > 0) return true;
-    if (item?.customization_price && item.customization_price > 0) return true;
+    // First check: If the item has a customization_price > 0, it's definitely customized
+    if (item?.customization_price && item.customization_price > 0) {
+      return true;
+    }
+    
+    // Second check: If the item has customization_details, it's customized
+    if (item?.customization_details && item.customization_details.length > 0) {
+      return true;
+    }
+    
+    // Third check: If the product name contains 'custom' or 'customized'
+    if (productName && (productName.toLowerCase().includes('custom') || productName.toLowerCase().includes('customized'))) {
+      return true;
+    }
+    
+    // Fourth check: If the order has a custom_model that includes this product's ID
+    // This is handled in the getModelUrl function
+    
     return false;
   };
   
   // Helper function to get the model URL for an item
   const getModelUrl = (productId: string, isCustomized: boolean, order: ExtendedOrder, item: ExtendedOrderItem) => {
+    // Check if this item should be considered customized based on the order's custom_model URL
+    // This is especially important for orders created with the presigned URL upload approach
+    let updatedIsCustomized = isCustomized;
+    
+    // If the order has a custom_model URL that contains this product's ID, it's customized
+    if (!updatedIsCustomized && order.custom_model && order.custom_model.includes(productId)) {
+      console.log(`Item ${productId} is customized based on custom_model URL match`);
+      updatedIsCustomized = true;
+    }
+    
     console.log('=== MODEL URL DEBUG ===');
     console.log('Item:', JSON.stringify({
       product_id: item.product_id,
       product_name: item.product_name,
       customization_price: item.customization_price,
       has_model_url: !!item.model_url,
-      isCustomized
+      original_isCustomized: isCustomized,
+      updated_isCustomized: updatedIsCustomized
     }));
     console.log('Order custom data:', JSON.stringify({
       has_custom_model: !!order.custom_model,
@@ -185,41 +210,95 @@ const OrdersPage = () => {
       return item.model_url;
     }
     
-    // Second priority: If the order has a custom_model field directly from DynamoDB
-    // AND this is the first item in the order (to avoid using the same model for all items)
-    if (order.custom_model && order.items[0].product_id === item.product_id) {
-      console.log(`Using order.custom_model from DynamoDB: ${order.custom_model}`);
+    // For customized items, try to find the matching custom model
+    if (updatedIsCustomized) {
+      console.log('Processing customized item:', item.product_name);
+      
+      // If we have custom_models array in the order, try to find the exact match
+      if (order.custom_models && order.custom_models.length > 0) {
+        console.log('Order has custom_models array with length:', order.custom_models.length);
+        
+        // First approach: Try to match by unique combination of product_id and customization details
+        const allItems = order.items;
+        let customModelIndex = -1;
+        
+        // Count how many customized items we have for each product_id
+        const customizedProductCounts: Record<string, number> = {};
+        const customizedProductIndices: Record<string, number[]> = {};
+        
+        // First pass: count and track indices
+        allItems.forEach((orderItem, idx) => {
+          if (orderItem.customization_details && orderItem.customization_details.length > 0) {
+            if (!customizedProductCounts[orderItem.product_id]) {
+              customizedProductCounts[orderItem.product_id] = 0;
+              customizedProductIndices[orderItem.product_id] = [];
+            }
+            customizedProductCounts[orderItem.product_id]++;
+            customizedProductIndices[orderItem.product_id].push(idx);
+          }
+        });
+        
+        console.log('Customized product counts:', JSON.stringify(customizedProductCounts));
+        console.log('Customized product indices:', JSON.stringify(customizedProductIndices));
+        
+        // Find which customized instance of this product we're dealing with
+        if (customizedProductIndices[item.product_id]) {
+          const productCustomizedItems = customizedProductIndices[item.product_id];
+          const itemIndexInArray = productCustomizedItems.findIndex(idx => 
+            allItems[idx].product_id === item.product_id && 
+            allItems[idx].customization_price === item.customization_price &&
+            JSON.stringify(allItems[idx].customization_details) === JSON.stringify(item.customization_details)
+          );
+          
+          if (itemIndexInArray !== -1) {
+            // This is the nth customized instance of this product
+            const customizedItemCount = productCustomizedItems.indexOf(productCustomizedItems[itemIndexInArray]);
+            console.log(`This is customized instance #${customizedItemCount} of product ${item.product_id}`);
+            
+            // Find the corresponding custom model
+            let modelCounter = 0;
+            let foundModelIndex = -1;
+            
+            // Count through custom models to find the right one for this product
+            for (let i = 0; i < order.custom_models.length; i++) {
+              const modelUrl = order.custom_models[i];
+              // Check if this model URL contains the product ID (common pattern in S3 uploads)
+              if (modelUrl.includes(item.product_id)) {
+                if (modelCounter === customizedItemCount) {
+                  foundModelIndex = i;
+                  break;
+                }
+                modelCounter++;
+              }
+            }
+            
+            if (foundModelIndex !== -1) {
+              console.log(`Found matching custom model at index ${foundModelIndex}: ${order.custom_models[foundModelIndex]}`);
+              return order.custom_models[foundModelIndex];
+            }
+          }
+        }
+        
+        // Fallback: Use the first available custom model if we couldn't find an exact match
+        console.log('Using first available custom model as fallback');
+        return order.custom_models[0];
+      }
+      
+      // Fallback for legacy orders with single custom_model field
+      if (order.custom_model) {
+        console.log(`Using order.custom_model for customized item: ${order.custom_model}`);
+        return order.custom_model;
+      }
+    }
+    
+    // Special case: Check if the order has a custom_model that contains this product's ID
+    // This handles cases where isCustomized wasn't set correctly but we have a custom model
+    if (order.custom_model && order.custom_model.includes(productId)) {
+      console.log(`Using order.custom_model that matches product ID: ${order.custom_model}`);
       return order.custom_model;
     }
     
-    // Third priority: If we have custom_models array in the order, try to match by product ID
-    if (order.custom_models && order.custom_models.length > 0) {
-      // Find the index of this item in the order items array
-      const itemIndex = order.items.findIndex(orderItem => 
-        orderItem.product_id === item.product_id && 
-        orderItem.customization_price === item.customization_price
-      );
-      
-      console.log('Item index in order:', itemIndex);
-      console.log('Order items:', JSON.stringify(order.items.map(i => ({
-        product_id: i.product_id,
-        customization_price: i.customization_price
-      }))));
-      
-      // If we found the item and there's a corresponding custom model, use it
-      if (itemIndex >= 0 && itemIndex < order.custom_models.length) {
-        console.log(`Using order's custom_models[${itemIndex}]: ${order.custom_models[itemIndex]}`);
-        return order.custom_models[itemIndex];
-      }
-      
-      // Fallback to the first custom model if we can't match by index
-      if (isCustomized) {
-        console.log(`Using order's first custom_model: ${order.custom_models[0]}`);
-        return order.custom_models[0];
-      }
-    }
-    
-    // Fourth priority: Use the product's base model from our productModels map
+    // For non-customized items, always use the base product model
     if (productModels[productId]) {
       console.log(`Using product's base model: ${productModels[productId]}`);
       return productModels[productId];
