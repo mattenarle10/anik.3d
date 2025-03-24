@@ -1,0 +1,24 @@
+// /src/app/admin/products/layout.tsx
+import type { Metadata } from "next";
+import "../../globals.css";
+import AdminHeader from "../../../components/admin/admin-header";
+
+export const metadata: Metadata = {
+  title: "Anik.3D Admin - Products",
+  description: "Admin products management for Anik.3D",
+};
+
+export default function AdminProductsLayout({
+  children,
+}: Readonly<{
+  children: React.ReactNode;
+}>) {
+  return (
+    <div className="font-montreal antialiased bg-white min-h-screen">
+      <AdminHeader />
+      <main className="container mx-auto px-4 py-6">
+        {children}
+      </main>
+    </div>
+  );
+}

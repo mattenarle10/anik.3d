@@ -1,0 +1,282 @@
+@import "tailwindcss";
+@import "../../public/fonts/fonts.css";
+
+/* Only essential global styles that can't be handled by Tailwind */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Custom animations */
+@keyframes slideIn {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+.animate-slide-in {
+  animation: slideIn 0.3s ease-out forwards;
+}
+
+/* Banner animations */
+@keyframes gradient-x {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.animate-gradient-x {
+  background-size: 200% 200%;
+  animation: gradient-x 15s ease infinite;
+}
+
+/* Stars/dots animation */
+.stars {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+}
+
+.stars:before, .stars:after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: 
+    radial-gradient(white, rgba(255,255,255,0) 2px),
+    radial-gradient(white, rgba(255,255,255,0) 1px);
+  background-size: 100px 100px, 50px 50px;
+  background-position: 0 0, 25px 25px;
+}
+
+.stars:after {
+  animation: stars 15s linear infinite;
+}
+
+@keyframes stars {
+  from {
+    transform: translateY(0);
+  }
+  to {
+    transform: translateY(100px);
+  }
+}
+
+/* 3D Cubes */
+.cube {
+  position: absolute;
+  width: 60px;
+  height: 60px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
+  backdrop-filter: blur(5px);
+  transform-style: preserve-3d;
+  animation-duration: 20s;
+  animation-iteration-count: infinite;
+  animation-timing-function: linear;
+}
+
+.cube1 {
+  top: 20%;
+  left: 10%;
+  animation-name: float1;
+}
+
+.cube2 {
+  top: 60%;
+  left: 75%;
+  width: 100px;
+  height: 100px;
+  animation-name: float2;
+}
+
+.cube3 {
+  top: 30%;
+  left: 85%;
+  width: 40px;
+  height: 40px;
+  animation-name: float3;
+}
+
+@keyframes float1 {
+  0% {
+    transform: translateY(0) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-30px) rotate(180deg);
+  }
+  100% {
+    transform: translateY(0) rotate(360deg);
+  }
+}
+
+@keyframes float2 {
+  0% {
+    transform: translateY(0) rotate(0deg);
+  }
+  50% {
+    transform: translateY(40px) rotate(-180deg);
+  }
+  100% {
+    transform: translateY(0) rotate(-360deg);
+  }
+}
+
+@keyframes float3 {
+  0% {
+    transform: translateY(0) rotate(0deg) translateX(0);
+  }
+  33% {
+    transform: translateY(-20px) rotate(120deg) translateX(20px);
+  }
+  66% {
+    transform: translateY(20px) rotate(240deg) translateX(-20px);
+  }
+  100% {
+    transform: translateY(0) rotate(360deg) translateX(0);
+  }
+}
+
+/* Figurine Animations */
+.figurine1 {
+  animation: float-figurine1 8s ease-in-out infinite;
+}
+
+.figurine2 {
+  animation: float-figurine2 12s ease-in-out infinite;
+}
+
+.figurine3 {
+  animation: float-figurine3 10s ease-in-out infinite;
+}
+
+@keyframes float-figurine1 {
+  0% {
+    transform: translateY(0) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-20px) rotate(5deg);
+  }
+  100% {
+    transform: translateY(0) rotate(0deg);
+  }
+}
+
+@keyframes float-figurine2 {
+  0% {
+    transform: translateY(0) rotate(0deg) scale(1);
+  }
+  33% {
+    transform: translateY(-15px) rotate(-3deg) scale(1.05);
+  }
+  66% {
+    transform: translateY(10px) rotate(3deg) scale(0.95);
+  }
+  100% {
+    transform: translateY(0) rotate(0deg) scale(1);
+  }
+}
+
+@keyframes float-figurine3 {
+  0% {
+    transform: translateY(0) translateX(0) rotate(0deg);
+  }
+  25% {
+    transform: translateY(-10px) translateX(15px) rotate(3deg);
+  }
+  50% {
+    transform: translateY(5px) translateX(25px) rotate(-2deg);
+  }
+  75% {
+    transform: translateY(-5px) translateX(10px) rotate(1deg);
+  }
+  100% {
+    transform: translateY(0) translateX(0) rotate(0deg);
+  }
+}
+
+/* Animation for float-1, float-2, float-3 classes */
+.animate-float-1 {
+  animation: float-figurine1 8s ease-in-out infinite;
+}
+
+.animate-float-2 {
+  animation: float-figurine2 12s ease-in-out infinite;
+}
+
+.animate-float-3 {
+  animation: float-figurine3 10s ease-in-out infinite;
+}
+
+/* Order Success Modal Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(30px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes scaleIn {
+  0% {
+    transform: scale(0.8);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.1);
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes progressBar {
+  0% {
+    width: 0%;
+  }
+  100% {
+    width: 100%;
+  }
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.4s ease-out forwards;
+}
+
+.animate-slideUp {
+  animation: slideUp 0.5s ease-out forwards;
+}
+
+.animate-scaleIn {
+  animation: scaleIn 0.6s ease-out forwards;
+}
+
+.animate-progressBar {
+  animation: progressBar 4.5s linear forwards;
+}
