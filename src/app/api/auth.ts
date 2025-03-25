@@ -17,18 +17,19 @@ export type AuthResponse = {
     email: string;
     name: string;
     salt?: string;
+    shipping_address?: string;
+    phone_number?: string;
   };
 };
 
 export type UpdateProfileData = {
   name?: string;
   shipping_address?: string;
-  phone?: string;
+  phone_number?: string;
 };
 
 // API base URL
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL
-
+export const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL 
 /**
  * Login user with email and password
  * @param credentials User login credentials
@@ -150,7 +151,7 @@ export const updateUserProfile = async (userData: UpdateProfileData): Promise<an
       ...currentUser,
       name: userData.name || currentUser.name,
       shipping_address: userData.shipping_address,
-      phone: userData.phone
+      phone_number: userData.phone_number
     };
     
     // Update the stored user data in localStorage
@@ -173,7 +174,7 @@ export const updateUserProfile = async (userData: UpdateProfileData): Promise<an
           // or might recognize this is an update request based on the token
           password: 'password_placeholder', 
           shipping_address: userData.shipping_address,
-          phone: userData.phone
+          phone_number: userData.phone_number
         }),
       });
       

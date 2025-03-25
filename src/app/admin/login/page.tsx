@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
+import { API_BASE_URL } from '@/app/api/auth';
 
 export default function AdminLogin() {
   const router = useRouter();
@@ -43,7 +44,7 @@ export default function AdminLogin() {
     setShowNotification(false);
     
     try {
-      const response = await fetch('https://kebyzdods1.execute-api.us-east-2.amazonaws.com/dev/admin/login', {
+      const response = await fetch(`${API_BASE_URL}/admin/login`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
