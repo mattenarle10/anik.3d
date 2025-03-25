@@ -10,7 +10,7 @@ export type User = {
 };
 
 // API base URL
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL 
+export const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL
 
 /**
  * Fetch all users (admin only)
