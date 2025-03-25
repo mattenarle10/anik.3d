@@ -32,7 +32,7 @@ const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL
 export const fetchAllOrders = async (): Promise<Order[]> => {
   try {
     const response = await fetch(`${API_BASE_URL}/admin/orders`, {
-
+      // No headers needed
     });
     
     if (!response.ok) {

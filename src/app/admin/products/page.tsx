@@ -72,11 +72,18 @@ export default function AdminProducts() {
     if (!sortConfig) return;
     
     const sortedProducts = [...filteredProducts].sort((a, b) => {
-      if (a[sortConfig.key as keyof Product] < b[sortConfig.key as keyof Product]) {
-        return sortConfig.direction === 'asc' ? -1 : 1;
-      }
-      if (a[sortConfig.key as keyof Product] > b[sortConfig.key as keyof Product]) {
-        return sortConfig.direction === 'asc' ? 1 : -1;
+      if (sortConfig && sortConfig.key) {
+        const aValue = a[sortConfig.key as keyof Product];
+        const bValue = b[sortConfig.key as keyof Product];
+        
+        if (aValue !== undefined && bValue !== undefined) {
+          if (aValue < bValue) {
+            return sortConfig.direction === 'asc' ? -1 : 1;
+          }
+          if (aValue > bValue) {
+            return sortConfig.direction === 'asc' ? 1 : -1;
+          }
+        }
       }
       return 0;
     });
@@ -172,7 +179,8 @@ export default function AdminProducts() {
         {/* Tab navigation */}
         <div className="flex border-b border-gray-100 mb-8">
           <div className="mr-8 pb-2 border-b-2 border-black font-montreal text-black">Products</div>
-          <div className="mr-8 pb-2 border-b-0 font-montreal text-black opacity-50">Orders</div>
+          <a href="/admin/orders" className="mr-8 pb-2 font-montreal text-black opacity-50">Orders</a>
+          <a href="/admin/users" className="mr-8 pb-2 font-montreal text-black opacity-50">Users</a>
         </div>
         
         <div className="border border-black rounded-sm shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] p-8 bg-white">
@@ -208,6 +216,9 @@ export default function AdminProducts() {
         </Link>
         <Link href="/admin/orders" className="mr-8 pb-2 border-b-0 font-montreal text-black opacity-50 hover:opacity-100 transition-opacity">
           Orders
+        </Link>
+        <Link href="/admin/users" className="mr-8 pb-2 border-b-0 font-montreal text-black opacity-50 hover:opacity-100 transition-opacity">
+          Users
         </Link>
       </div>
       

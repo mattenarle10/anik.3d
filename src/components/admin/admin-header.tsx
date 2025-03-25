@@ -11,6 +11,7 @@ export default function AdminHeader() {
   const handleLogout = () => {
     localStorage.removeItem('adminId');
     localStorage.removeItem('isAdminLoggedIn');
+    localStorage.removeItem('adminToken');
     router.push('/admin/login');
   };
   
@@ -18,7 +19,7 @@ export default function AdminHeader() {
     <header className="py-4 bg-white border-b border-gray-100">
       <div className="container mx-auto px-4 flex justify-between items-center">
         <div className="flex items-center">
-          <Link href="/" className="flex items-center">
+          <Link href="/admin/products" className="flex items-center">
             <Image 
               src="/images/anik-logo.png" 
               alt="Anik.3D Logo" 

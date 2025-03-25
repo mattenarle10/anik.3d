@@ -381,28 +381,30 @@ export default function AdminOrders() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-black"></div>
+      <div className="container mx-auto px-4 py-8">
+        {/* Tab navigation */}
+        <div className="flex border-b border-gray-100 mb-8">
+          <a href="/admin/products" className="mr-8 pb-2 font-montreal text-black opacity-50">Products</a>
+          <div className="mr-8 pb-2 border-b-2 border-black font-montreal text-black">Orders</div>
+          <a href="/admin/users" className="mr-8 pb-2 font-montreal text-black opacity-50">Users</a>
+        </div>
+        
+        <div className="border border-black rounded-sm shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] p-8 bg-white">
+          <div className="flex justify-center items-center h-64">
+            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-black"></div>
+          </div>
+        </div>
       </div>
     );
   }
 
   return (
     <div className="container mx-auto px-4 py-8">
-      {/* Minimalist tab navigation */}
+      {/* Tab navigation */}
       <div className="flex border-b border-gray-100 mb-8">
-        <Link
-          href="/admin/products"
-          className="mr-8 pb-2 border-b-0 font-montreal text-black opacity-50 hover:opacity-100 transition-opacity"
-        >
-          Products
-        </Link>
-        <Link
-          href="/admin/orders"
-          className="mr-8 pb-2 border-b-2 border-black font-montreal text-black"
-        >
-          Orders
-        </Link>
+        <a href="/admin/products" className="mr-8 pb-2 font-montreal text-black opacity-50">Products</a>
+        <div className="mr-8 pb-2 border-b-2 border-black font-montreal text-black">Orders</div>
+        <a href="/admin/users" className="mr-8 pb-2 font-montreal text-black opacity-50">Users</a>
       </div>
 
       <div className="border border-black rounded-sm shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] p-8 bg-white">
