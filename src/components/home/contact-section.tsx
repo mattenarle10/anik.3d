@@ -57,7 +57,7 @@ export default function ContactSection() {
                 </svg>
               </div>
               <h3 className="text-2xl font-medium mb-3 text-black font-montreal">Message Sent</h3>
-              <p className="text-lg mb-8 text-black font-montreal">Thank you for reaching out. We'll get back to you soon.</p>
+              <p className="text-lg mb-8 text-black font-montreal">Thank you for reaching out. We&apos;ll get back to you soon.</p>
               <button 
                 onClick={() => setSubmitStatus('idle')} 
                 className="text-black border-b-2 border-black px-4 py-2 hover:px-6 transition-all duration-300 font-montreal"

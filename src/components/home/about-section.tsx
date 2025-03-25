@@ -22,7 +22,7 @@ export default function AboutSection() {
           <div className="md:w-1/2">
             <h3 className="text-2xl font-medium mb-6 text-black">Our Story</h3>
             <p className="mb-6 text-lg leading-relaxed text-black">
-              Founded in 2025, Anik.3D began as a passion project between friends with a shared love for 3D design. We've quickly established ourselves as a cutting-edge 3D printing studio known for exceptional quality and innovative designs.
+              Founded in 2025, Anik.3D began as a passion project between friends with a shared love for 3D design. We&apos;ve quickly established ourselves as a cutting-edge 3D printing studio known for exceptional quality and innovative designs.
             </p>
             <p className="mb-6 text-lg leading-relaxed text-black">
               Our name reflects our commitment to creating unique pieces that stand out in both design and craftsmanship, bringing imagination to life through artistic vision and technical precision.

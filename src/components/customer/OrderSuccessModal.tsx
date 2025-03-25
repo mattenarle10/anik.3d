@@ -1,7 +1,6 @@
 // /src/components/customer/OrderSuccessModal.tsx
 'use client';
 import React, { useEffect, useState } from 'react';
-import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 
 interface OrderSuccessModalProps {
@@ -60,7 +59,7 @@ const OrderSuccessModal: React.FC<OrderSuccessModalProps> = ({ isOpen = true, on
         )}
         
         <p className="text-gray-600 mb-6 text-center">
-          We've received your purchase and will begin processing it right away. You'll receive updates as your order progresses.
+          We&apos;ve received your purchase and will begin processing it right away. You&apos;ll receive updates as your order progresses.
         </p>
         
         <div className="relative w-full h-1 bg-gray-200 rounded-full mb-4">

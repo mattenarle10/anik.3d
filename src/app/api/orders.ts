@@ -24,8 +24,7 @@ export type Order = {
 };
 
 // API base URL
-const API_BASE_URL = 'https://kebyzdods1.execute-api.us-east-2.amazonaws.com/dev';
-
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL
 /**
  * Fetch all orders (admin only)
  * @returns Promise with array of orders

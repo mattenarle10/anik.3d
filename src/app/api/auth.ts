@@ -27,7 +27,7 @@ export type UpdateProfileData = {
 };
 
 // API base URL
-const API_BASE_URL = 'https://kebyzdods1.execute-api.us-east-2.amazonaws.com/dev';
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL
 
 /**
  * Login user with email and password

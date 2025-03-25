@@ -1,11 +1,12 @@
 'use client';
-import { useEffect, useState, useMemo, useCallback, useRef } from 'react';
+import { useEffect, useState, useMemo, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 
-import { Order, fetchAllOrders, updateOrderStatus, deleteOrder } from '../../api/orders';
+import { Order, fetchAllOrders, deleteOrder } from '../../api/orders';
 import { User, fetchAllUsers, fetchUserById } from '../../api/users';
 import ViewOrderItemsModal from '../../../components/admin/ViewOrderItemsModal';
+// ViewModelModal is used in the JSX below
 import ViewModelModal from '../../../components/admin/ViewModelModal';
 import UpdateOrderStatusModal from '../../../components/admin/UpdateOrderStatusModal';
 import ViewCustomerModal from '../../../components/admin/ViewCustomerModal';
@@ -16,6 +17,15 @@ type SortKey = keyof Order | 'items.length';
 
 // Define the valid order status types
 type OrderStatus = 'pending' | 'processing' | 'shipped' | 'delivered' | 'cancelled';
+
+// Define type for order items to avoid using 'any'
+type OrderItemType = {
+  product_id: string;
+  product_name?: string;
+  quantity: number;
+  price: number;
+  [key: string]: unknown;
+};
 
 export default function AdminOrders() {
   const router = useRouter();
@@ -28,7 +38,7 @@ export default function AdminOrders() {
   const [modelViewerUrl, setModelViewerUrl] = useState<string | null>(null);
   const [viewingItems, setViewingItems] = useState<{
     orderId: string;
-    items: any[];
+    items: OrderItemType[];
     customModelUrl?: string;
     customModelUrls?: string[];
     total_amount: number;
@@ -108,6 +118,21 @@ export default function AdminOrders() {
     return users.get(userId) || null;
   }, [users]);
 
+  // Define handleCloseModal with useCallback to prevent dependency changes on every render
+  const handleCloseModal = useCallback(() => {
+    // If we're viewing a model, just close the model viewer but keep the order items open
+    if (modelViewerUrl) {
+      setModelViewerUrl(null);
+    } else {
+      // Otherwise close everything
+      setModelViewerUrl(null);
+      setViewingItems(null);
+      setEditingStatus(null);
+      setViewingCustomer(null);
+      setDeletingOrder(null);
+    }
+  }, [modelViewerUrl]);
+
   // Handle keyboard events for modals (Escape key to close)
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -138,6 +163,7 @@ export default function AdminOrders() {
     editingStatus,
     viewingCustomer,
     deletingOrder,
+    handleCloseModal, // Added missing dependency
   ]);
 
   // Sort orders based on sort configuration
@@ -206,7 +232,7 @@ export default function AdminOrders() {
     }
   };
 
-  const handleViewItems = (orderId: string, items: any[], customModelUrl?: string, customModelUrls?: string[]) => {
+  const handleViewItems = (orderId: string, items: OrderItemType[], customModelUrl?: string, customModelUrls?: string[]) => {
     const order = orders.find((o) => o.order_id === orderId);
     setViewingItems({
       orderId,
@@ -233,19 +259,7 @@ export default function AdminOrders() {
     setViewingCustomer({ userId, userData });
   };
 
-  const handleCloseModal = () => {
-    // If we're viewing a model, just close the model viewer but keep the order items open
-    if (modelViewerUrl) {
-      setModelViewerUrl(null);
-    } else {
-      // Otherwise close everything
-      setModelViewerUrl(null);
-      setViewingItems(null);
-      setEditingStatus(null);
-      setViewingCustomer(null);
-      setDeletingOrder(null);
-    }
-  };
+  // handleCloseModal is now defined above
 
   // Function to handle opening the status update modal
   const handleEditStatus = (orderId: string, currentStatus: string) => {
@@ -255,6 +269,7 @@ export default function AdminOrders() {
     });
   };
 
+  // Used when an order status is updated - referenced in UpdateOrderStatusModal
   const refreshOrders = async () => {
     try {
       setLoading(true);
@@ -341,7 +356,7 @@ export default function AdminOrders() {
     });
   };
 
-  // Format time ago for status updates
+  // Format time ago for status updates - used in the rendered JSX below
   const formatTimeAgo = (dateString: string) => {
     const date = new Date(dateString);
     const now = new Date();

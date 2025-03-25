@@ -2,14 +2,15 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+// Router is not used in this component
+// import { useRouter } from 'next/navigation';
 import CustomerLayout from '@/components/customer/layout';
 import { 
   Order, 
-  OrderItem, 
+  // OrderItem, // Unused import
   fetchUserOrders, 
-  getStatusColor, 
-  getStatusProgress, 
+  // getStatusColor, // Unused import
+  // getStatusProgress, // Unused import
   getStatusStep,
   formatOrderDate
 } from '../api/orders';
@@ -45,7 +46,7 @@ const OrdersPage = () => {
   const [productModels, setProductModels] = useState<Record<string, string>>({});
   const [modelViewerUrl, setModelViewerUrl] = useState<string | null>(null);
   const [userName, setUserName] = useState<string | undefined>(undefined);
-  const router = useRouter();
+  // Router is not used in this component
 
   useEffect(() => {
     const fetchOrders = async () => {
@@ -65,9 +66,9 @@ const OrdersPage = () => {
             const extendedItems: ExtendedOrderItem[] = await Promise.all(
               order.items.map(async (item) => {
                 // Check if the item has customization details
-                const customizationDetails = (item as any).customization_details;
-                const customizationPrice = (item as any).customization_price;
-                const modelUrl = (item as any).model_url;
+                const customizationDetails = (item as { customization_details?: CustomizationDetail[] }).customization_details;
+                const customizationPrice = (item as { customization_price?: number }).customization_price;
+                const modelUrl = (item as { model_url?: string }).model_url;
                 
                 return {
                   ...item,
@@ -79,9 +80,9 @@ const OrdersPage = () => {
             );
             
             // Check if the order has custom models
-            const customModel = (order as any).custom_model;
-            const customModels = (order as any).custom_models;
-            const totalCustomizationPrice = (order as any).total_customization_price;
+            const customModel = (order as { custom_model?: string }).custom_model;
+            const customModels = (order as { custom_models?: string[] }).custom_models;
+            const totalCustomizationPrice = (order as { total_customization_price?: number }).total_customization_price;
             
             return {
               ...order,
@@ -220,7 +221,7 @@ const OrdersPage = () => {
         
         // First approach: Try to match by unique combination of product_id and customization details
         const allItems = order.items;
-        let customModelIndex = -1;
+        // Custom model index is not used in the current implementation
         
         // Count how many customized items we have for each product_id
         const customizedProductCounts: Record<string, number> = {};
@@ -367,7 +368,7 @@ const OrdersPage = () => {
               </svg>
             </div>
             <h2 className="text-xl font-semibold mb-4 font-montreal text-black">No orders yet</h2>
-            <p className="text-gray-600 mb-6">You haven't placed any orders yet.</p>
+            <p className="text-gray-600 mb-6">You haven&apos;t placed any orders yet.</p>
             <Link href="/products" className="inline-block bg-black text-white px-6 py-3 rounded-sm font-montreal hover:bg-gray-800 transition-colors">
               Start Shopping
             </Link>

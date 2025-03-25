@@ -10,7 +10,7 @@ export type Product = {
   };
   
   // API base URL
-  export const API_BASE_URL = 'https://kebyzdods1.execute-api.us-east-2.amazonaws.com/dev';
+  export const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL
   
   /**
    * Fetch all products

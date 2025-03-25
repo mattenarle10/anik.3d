@@ -1,6 +1,7 @@
 'use client';
 import { useState, useEffect } from 'react';
-import { fetchProductById } from '@/app/api/products';
+// fetchProductById is not used directly but we have our own implementation
+// import { fetchProductById } from '@/app/api/products';
 
 interface OrderItem {
   product_id: string;
@@ -249,11 +250,12 @@ export default function ViewOrderItemsModal({
   };
 
   // Function to handle opening a custom model from the order
-  const handleCustomModel = (modelUrl: string) => {
+  // This function is kept for future use but currently not used
+  /* const handleCustomModel = (modelUrl: string) => {
     if (onViewModel) {
       onViewModel(modelUrl);
     }
-  };
+  }; */
 
   // Effect to fetch product details when the modal is opened
   useEffect(() => {

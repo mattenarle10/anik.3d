@@ -257,7 +257,7 @@ const CartPage = () => {
               </svg>
             </div>
             <h2 className="text-xl font-semibold mb-4 font-montreal text-black">Your cart is empty</h2>
-            <p className="text-gray-600 mb-6">Looks like you haven't added any items to your cart yet.</p>
+            <p className="text-gray-600 mb-6">Looks like you haven&apos;t added any items to your cart yet.</p>
             <Link href="/products" className="inline-block bg-black text-white px-6 py-3 rounded-sm font-montreal hover:bg-gray-800 transition-colors">
               Continue Shopping
             </Link>
