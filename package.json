@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@aws-amplify/ui-react": "^6.9.4",
     "@react-three/drei": "^10.0.4",
     "@react-three/fiber": "^9.1.0",
     "aws-amplify": "^6.13.6",
@@ -20,15 +21,22 @@
     "tsparticles-engine": "^2.12.0"
   },
   "devDependencies": {
+    "@aws-amplify/backend": "^1.14.3",
+    "@aws-amplify/backend-cli": "^1.5.0",
     "@eslint/eslintrc": "^3",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "@types/three": "^0.174.0",
+    "aws-cdk": "^2.1003.0",
+    "aws-cdk-lib": "^2.180.0",
+    "constructs": "^10.4.2",
+    "esbuild": "^0.25.1",
     "eslint": "^9",
     "eslint-config-next": "15.2.3",
     "tailwindcss": "^4",
-    "typescript": "^5"
+    "tsx": "^4.19.3",
+    "typescript": "^5.8.2"
   }
 }
