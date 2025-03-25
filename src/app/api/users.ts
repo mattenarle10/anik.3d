@@ -18,10 +18,11 @@ export const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL
  */
 export const fetchAllUsers = async (): Promise<User[]> => {
   try {
-    // Get the admin token from localStorage
-    const token = localStorage.getItem('adminToken');
+    // Check if admin is logged in
+    const isAdminLoggedIn = localStorage.getItem('isAdminLoggedIn') === 'true';
+    const adminId = localStorage.getItem('adminId');
     
-    if (!token) {
+    if (!isAdminLoggedIn || !adminId) {
       throw new Error('Admin authentication required');
     }
     
