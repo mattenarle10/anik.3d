@@ -7,6 +7,7 @@ import { useRouter } from 'next/navigation';
 import OrderSuccessModal from '@/components/customer/OrderSuccessModal';
 import MiniModelViewer from '@/components/customer/MiniModelViewer';
 import CustomerLayout from '@/components/customer/layout';
+import ShippingInfoForm from '@/components/customer/ShippingInfoForm';
 import { createOrder, generateOrderUploadUrl } from '@/app/api/orders';
 
 const CartPage = () => {
@@ -18,6 +19,7 @@ const CartPage = () => {
   const [uploadProgress, setUploadProgress] = useState(0);
   const [errorDetails, setErrorDetails] = useState<string | null>(null);
   const [completedOrderId, setCompletedOrderId] = useState<string | null>(null);
+  const [hasShippingInfo, setHasShippingInfo] = useState(false);
   const router = useRouter();
 
   // Get user data from localStorage on client side
@@ -26,6 +28,8 @@ const CartPage = () => {
     if (userData) {
       const parsedUserData = JSON.parse(userData);
       setUserName(parsedUserData.name);
+      // Check for both shipping address and phone number
+      setHasShippingInfo(!!parsedUserData.shipping_address && !!parsedUserData.phone_number);
     }
     setMounted(true);
   }, []);
@@ -169,7 +173,8 @@ const CartPage = () => {
       setUploadProgress(80);
 
       // Get user's shipping address from localStorage
-      let shippingAddress = "123 Main St, Anytown, USA"; // Default fallback
+      let shippingAddress = "";
+      let phoneNumber = "";
       try {
         const userData = localStorage.getItem('userData');
         if (userData) {
@@ -179,11 +184,23 @@ const CartPage = () => {
           } else if (parsedUserData.shipping_address) {
             shippingAddress = parsedUserData.shipping_address;
           }
+          
+          if (parsedUserData.phone_number) {
+            phoneNumber = parsedUserData.phone_number;
+          }
+          
           console.log('Using shipping address from user profile:', shippingAddress);
+          console.log('Using phone number from user profile:', phoneNumber);
+        }
+        
+        if (!shippingAddress) {
+          throw new Error('Shipping address is required');
         }
       } catch (error) {
-        console.error('Error getting shipping address:', error);
-        // Continue with default address
+        console.error('Error with shipping information:', error);
+        setErrorDetails('Please add your shipping information before checkout');
+        setIsCheckingOut(false);
+        return;
       }
 
       console.log('Creating order with items:', orderItems.length);
@@ -402,19 +419,37 @@ const CartPage = () => {
 
           {/* Order Summary - Right Side (1 column) */}
           <div className="lg:col-span-1">
-            <div className="bg-white rounded-lg border border-gray-100 p-6 sticky top-24">
-              <h2 className="text-xl font-semibold mb-6 font-montreal text-black">Order Summary</h2>
+            {/* Shipping Information Form */}
+            <ShippingInfoForm onUpdate={() => {
+              // Update hasShippingInfo state when shipping info is updated
+              const userData = localStorage.getItem('userData');
+              if (userData) {
+                const parsedUserData = JSON.parse(userData);
+                // Check for both shipping address and phone number
+                setHasShippingInfo(!!parsedUserData.shipping_address && !!parsedUserData.phone_number);
+              }
+            }} />
+            
+            <div className="bg-white rounded-lg border border-gray-100 p-6 sticky top-24 shadow-sm">
+              <h2 className="text-xl font-semibold mb-6 font-montreal text-black flex items-center">
+                <span className="mr-2">
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 0 0-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 0 0-16.536-1.84M7.5 14.25 5.106 5.272M6 20.25a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Zm12.75 0a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z" />
+                  </svg>
+                </span>
+                Order Summary
+              </h2>
 
               <div className="space-y-4 mb-6">
-                <div className="flex justify-between text-gray-600">
+                <div className="flex justify-between text-gray-600 font-montreal">
                   <span>Subtotal</span>
                   <span>${totalPrice.toFixed(2)}</span>
                 </div>
-                <div className="flex justify-between text-gray-600">
+                <div className="flex justify-between text-gray-600 font-montreal">
                   <span>Shipping</span>
                   <span>Free</span>
                 </div>
-                <div className="border-t border-gray-100 pt-4 flex justify-between font-semibold font-montreal text-black">
+                <div className="border-t border-gray-100 pt-4 mt-4 flex justify-between font-semibold font-montreal text-black">
                   <span>Total</span>
                   <span>${totalPrice.toFixed(2)}</span>
                 </div>
@@ -422,12 +457,12 @@ const CartPage = () => {
 
               <button
                 onClick={handleCheckout}
-                disabled={isCheckingOut}
+                disabled={isCheckingOut || !hasShippingInfo}
                 className={`w-full py-3 rounded-sm font-montreal transition-colors ${
-                  isCheckingOut
+                  isCheckingOut || !hasShippingInfo
                     ? 'bg-gray-400 cursor-not-allowed'
                     : 'bg-black hover:bg-gray-800'
-                } text-white`}
+                } text-white flex items-center justify-center`}
               >
                 {isCheckingOut ? (
                   <span className="flex items-center justify-center">
@@ -437,16 +472,32 @@ const CartPage = () => {
                     </svg>
                     Processing...
                   </span>
+                ) : !hasShippingInfo ? (
+                  <span className="flex items-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5 mr-2">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z" />
+                    </svg>
+                    Add Shipping Information
+                  </span>
                 ) : (
-                  'Checkout'
+                  <span className="flex items-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5 mr-2">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-3.75 3h15a2.25 2.25 0 0 0 2.25-2.25V6.75A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25v10.5A2.25 2.25 0 0 0 4.5 19.5Z" />
+                    </svg>
+                    Checkout
+                  </span>
                 )}
               </button>
 
               <div className="mt-6">
                 <Link
                   href="/products"
-                  className="block text-center text-gray-600 hover:text-black font-montreal text-sm"
+                  className="block text-center text-gray-600 hover:text-black font-montreal text-sm flex items-center justify-center"
                 >
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4 mr-1">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M6.75 15.75 3 12m0 0 3.75-3.75M3 12h18" />
+                  </svg>
                   Continue Shopping
                 </Link>
               </div>
@@ -455,6 +506,41 @@ const CartPage = () => {
         </div>
       </div>
 
+
+      {/* Progress Bar */}
+      {isCheckingOut && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white p-6 rounded-lg shadow-lg max-w-md w-full">
+            <h3 className="text-lg font-semibold mb-4 font-montreal text-black">Processing Your Order</h3>
+
+            <div className="w-full bg-gray-200 rounded-full h-2.5 mb-4">
+              <div
+                className="bg-black h-2.5 rounded-full transition-all duration-300"
+                style={{ width: `${uploadProgress}%` }}
+              ></div>
+            </div>
+
+            <p className="text-sm text-gray-600 mb-2 font-montreal">
+              {uploadProgress < 30 && "Preparing your customized model..."}
+              {uploadProgress >= 30 && uploadProgress < 70 && "Uploading your customized model..."}
+              {uploadProgress >= 70 && uploadProgress < 90 && "Processing order details..."}
+              {uploadProgress >= 90 && uploadProgress < 100 && "Finalizing your order..."}
+              {uploadProgress === 100 && "Order completed!"}
+            </p>
+
+            {errorDetails && (
+              <div className="mt-4 text-red-500 text-sm font-montreal bg-red-50 p-3 rounded-sm border border-red-100">
+                <div className="flex items-start">
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5 mr-2 flex-shrink-0 text-red-500">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z" />
+                  </svg>
+                  <span className="break-words">{errorDetails}</span>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
       {/* Order Success Modal */}
       {showSuccessModal && (
         <OrderSuccessModal 
@@ -467,36 +553,6 @@ const CartPage = () => {
         />
       )}
 
-      {/* Progress Bar */}
-      {isCheckingOut && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white p-6 rounded-lg shadow-lg max-w-md w-full">
-            <h3 className="text-lg font-semibold mb-4">Processing Your Order</h3>
-
-            <div className="w-full bg-gray-200 rounded-full h-2.5 mb-4">
-              <div
-                className="bg-blue-600 h-2.5 rounded-full transition-all duration-300"
-                style={{ width: `${uploadProgress}%` }}
-              ></div>
-            </div>
-
-            <p className="text-sm text-gray-600 mb-2">
-              {uploadProgress < 30 && "Preparing your customized model..."}
-              {uploadProgress >= 30 && uploadProgress < 70 && "Uploading your customized model..."}
-              {uploadProgress >= 70 && uploadProgress < 90 && "Processing order details..."}
-              {uploadProgress >= 90 && uploadProgress < 100 && "Finalizing your order..."}
-              {uploadProgress === 100 && "Order completed!"}
-            </p>
-
-            {errorDetails && (
-              <div className="mt-4 p-3 bg-red-50 border border-red-200 rounded text-sm text-red-700">
-                <p className="font-semibold mb-1">Error Details:</p>
-                <p className="break-words">{errorDetails}</p>
-              </div>
-            )}
-          </div>
-        </div>
-      )}
     </CustomerLayout>
   );
 };

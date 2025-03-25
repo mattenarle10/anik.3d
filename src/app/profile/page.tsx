@@ -2,7 +2,8 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import CustomerLayout from '@/components/customer/layout';
-import { getUserData, updateUserProfile } from '@/app/api/auth';
+import { getUserData } from '@/app/api/auth';
+import { updateUserProfile } from '@/app/api/users';
 import toast from 'react-hot-toast';
 
 export default function ProfilePage() {
@@ -33,7 +34,7 @@ export default function ProfilePage() {
           setFormData({
             name: user.name || '',
             shipping_address: user.shipping_address || '',
-            phone: user.phone || ''
+            phone: user.phone_number || '' // Use phone_number from user data
           });
         }
       } catch (error) {
@@ -60,14 +61,32 @@ export default function ProfilePage() {
     setSaving(true);
 
     try {
+      // Get the user ID from localStorage
+      const userDataStr = localStorage.getItem('userData');
+      let userId = '';
+      
+      if (userDataStr) {
+        const user = JSON.parse(userDataStr);
+        userId = user.user_id;
+      }
+      
       const result = await updateUserProfile({
         name: formData.name,
         shipping_address: formData.shipping_address,
-        phone: formData.phone
+        phone_number: formData.phone // Note: API expects phone_number, not phone
       });
 
-      if (result && result.user) {
-        setUserData(result.user);
+      if (result) {
+        // Update local storage with the new data
+        const updatedUserData = {
+          ...userData,
+          name: formData.name,
+          shipping_address: formData.shipping_address,
+          phone_number: formData.phone // Store as phone_number in localStorage
+        };
+        localStorage.setItem('userData', JSON.stringify(updatedUserData));
+        
+        setUserData(updatedUserData);
         toast.success('Profile updated successfully');
       }
     } catch (error) {
@@ -180,7 +199,7 @@ export default function ProfilePage() {
               <div className="flex justify-between">
                 <span className="text-sm text-gray-500">Member Since</span>
                 <span className="text-sm">
-                  {userData?.created_at ? new Date(userData.created_at).toLocaleDateString() : 'N/A'}
+                  {userData?.date_created ? new Date(userData.date_created).toLocaleDateString() : 'N/A'}
                 </span>
               </div>
             </div>
