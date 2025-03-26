@@ -46,10 +46,14 @@ export function SectionNavigationWrapper() {
 }
 
 export default function SectionNavigation() {
-  const [isScrolled, setIsScrolled] = useState(false);
+  // Use null as initial state to avoid hydration mismatch
+  const [isScrolled, setIsScrolled] = useState<boolean | null>(null);
   const [activeSection, setActiveSection] = useState('hero');
   
   useEffect(() => {
+    // Set initial scroll state
+    setIsScrolled(window.scrollY > 300);
+    
     const handleScroll = () => {
       // Check if scrolled past hero section (adjust 300 based on your hero height)
       setIsScrolled(window.scrollY > 300);
@@ -71,9 +75,17 @@ export default function SectionNavigation() {
       }
     };
     
+    // Run once immediately
+    handleScroll();
+    
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
+  
+  // Don't render anything during initial client-side hydration
+  if (isScrolled === null) {
+    return null;
+  }
   
   // Bottom navigation for hero section
   if (!isScrolled) {

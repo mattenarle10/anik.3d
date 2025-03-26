@@ -67,8 +67,44 @@ export default function Footer() {
           </div>
         </div>
         
-        <div className="mt-6 text-center text-xs text-gray-400 font-montreal">
-          &copy; {new Date().getFullYear()} Anik__3D. All rights reserved.
+        <div className="mt-6 flex flex-col md:flex-row items-center justify-center gap-4 text-xs">
+          <div className="text-gray-400 font-montreal">
+            &copy; {new Date().getFullYear()} Anik__3D. All rights reserved.
+          </div>
+          
+          {/* Developer Links - Vercel-like buttons */}
+          <div className="flex flex-wrap gap-3 mt-2 md:mt-0">
+            <a 
+              href="/developer-manual" 
+              className="inline-flex items-center gap-1 px-3 py-1.5 bg-gray-800 border border-gray-700 rounded-md hover:bg-gray-700 transition-colors text-xs font-medium text-white"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+                <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+              </svg>
+              Developer Manual
+              <svg className="ml-1" width="10" height="10" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M2.07102 11.3494L0.963068 10.2415L9.2017 1.98864H2.83807L2.85227 0.454545H11.8438V9.46023H10.2955L10.3097 3.09659L2.07102 11.3494Z" fill="currentColor"/>
+              </svg>
+            </a>
+            
+            <a 
+              href="/developer-journal" 
+              className="inline-flex items-center gap-1 px-3 py-1.5 bg-gray-800 border border-gray-700 rounded-md hover:bg-gray-700 transition-colors text-xs font-medium text-white"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                <polyline points="14 2 14 8 20 8"></polyline>
+                <line x1="16" y1="13" x2="8" y2="13"></line>
+                <line x1="16" y1="17" x2="8" y2="17"></line>
+                <polyline points="10 9 9 9 8 9"></polyline>
+              </svg>
+              Developer Journal
+              <svg className="ml-1" width="10" height="10" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M2.07102 11.3494L0.963068 10.2415L9.2017 1.98864H2.83807L2.85227 0.454545H11.8438V9.46023H10.2955L10.3097 3.09659L2.07102 11.3494Z" fill="currentColor"/>
+              </svg>
+            </a>
+          </div>
         </div>
       </div>
     </footer>
