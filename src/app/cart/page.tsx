@@ -402,6 +402,12 @@ const CartPage = () => {
                               +
                             </button>
                           </div>
+                          
+                          {item.stock !== undefined && (
+                            <div className="text-xs text-gray-500 mt-1">
+                              {item.stock > 0 ? `${item.stock} in stock` : 'Out of stock'}
+                            </div>
+                          )}
 
                           <div className="text-right mt-4 md:mt-0">
                             <div className="text-sm text-gray-500">
@@ -490,7 +496,7 @@ const CartPage = () => {
                 ) : (
                   <span className="flex items-center">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5 mr-2">
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-3.75 3h15a2.25 2.25 0 0 0 2.25-2.25V6.75A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25v10.5A2.25 2.25 0 0 0 4.5 19.5Z" />
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-3.75 3h15a2.25 2.25 0 0 0 2.25-2.25V6.75A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25v10.5A2.25 2.25 0 0 0 4.5 19.5ZM12 15.75h.007v.008H12v-.008Z" />
                     </svg>
                     Checkout
                   </span>

@@ -16,6 +16,7 @@ export interface CartItem {
   name: string;
   price: number;
   quantity: number;
+  stock?: number; // Available stock for the item
   imageUrl?: string;
   modelUrl?: string;
   baseModelUrl?: string; // Original model URL for display in cart
@@ -60,22 +61,48 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
   
   // Add item to cart
   const addItem = (item: Omit<CartItem, 'id'>) => {
+    // Generate unique ID for new items
+    const newItem = { ...item, id: generateId() };
+    
     setItems(prevItems => {
-      // Check if this exact item (with same customizations) already exists
-      const existingItemIndex = prevItems.findIndex(i => 
-        i.productId === item.productId && 
-        i.isCustomized === item.isCustomized &&
-        JSON.stringify(i.customizations) === JSON.stringify(item.customizations)
-      );
+      // Check if item already exists in cart (by productId and customization)
+      const existingItemIndex = prevItems.findIndex(i => {
+        // For customized items, match both productId and customizations
+        if (newItem.isCustomized && i.isCustomized) {
+          // Check if product IDs match
+          if (i.productId !== newItem.productId) return false;
+          
+          // Check if customizations match
+          const iCustomizations = JSON.stringify(i.customizations || []);
+          const newCustomizations = JSON.stringify(newItem.customizations || []);
+          return iCustomizations === newCustomizations;
+        }
+        // For regular items, just match by productId
+        return i.productId === newItem.productId && !i.isCustomized && !newItem.isCustomized;
+      });
       
       if (existingItemIndex !== -1) {
         // If item exists, update quantity
         const updatedItems = [...prevItems];
-        updatedItems[existingItemIndex].quantity += item.quantity;
+        const existingItem = updatedItems[existingItemIndex];
+        
+        // Check if adding would exceed stock
+        if (existingItem.stock !== undefined) {
+          const newQuantity = existingItem.quantity + newItem.quantity;
+          
+          if (newQuantity > existingItem.stock) {
+            // Show an alert to inform the user
+            alert(`Sorry, only ${existingItem.stock} units available in stock.`);
+            updatedItems[existingItemIndex].quantity = existingItem.stock;
+            return updatedItems;
+          }
+        }
+        
+        updatedItems[existingItemIndex].quantity += newItem.quantity;
         return updatedItems;
       } else {
         // Otherwise add as new item
-        return [...prevItems, { ...item, id: generateId() }];
+        return [...prevItems, newItem];
       }
     });
   };
@@ -90,9 +117,19 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
     if (quantity < 1) return;
     
     setItems(prevItems => 
-      prevItems.map(item => 
-        item.id === id ? { ...item, quantity } : item
-      )
+      prevItems.map(item => {
+        // Check if we have stock information and enforce the limit
+        if (item.id === id) {
+          // If stock is defined, don't allow quantity to exceed it
+          if (item.stock !== undefined && quantity > item.stock) {
+            // Show an alert to inform the user
+            alert(`Sorry, only ${item.stock} units available in stock.`);
+            return { ...item, quantity: item.stock };
+          }
+          return { ...item, quantity };
+        }
+        return item;
+      })
     );
   };
   

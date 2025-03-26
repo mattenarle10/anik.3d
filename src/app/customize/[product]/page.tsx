@@ -161,6 +161,12 @@ export default function CustomizePage() {
   const handleAddToCart = async () => {
     if (!product) return;
 
+    // Check if product is in stock
+    if (product.quantity <= 0) {
+      toast.error('Sorry, this product is out of stock.');
+      return;
+    }
+
     setIsAddingToCart(true);
     setIsExporting(true);
 
@@ -273,15 +279,16 @@ export default function CustomizePage() {
         setIsExporting(false);
       }
 
-      // Create customized product object for cart
+      // Create customized product object with stock information
       const customizedProduct = {
         productId: product.product_id,
         name: product.name,
         price: product.price,
         quantity: 1,
-        modelUrl: customModelUrl || product.model_url, // S3 URL for the customized model (used for order creation)
-        baseModelUrl: product.model_url, // Original model URL (used for display in cart)
+        stock: product.quantity,
         isCustomized: true,
+        baseModelUrl: product.model_url,
+        modelUrl: customModelUrl || product.model_url,
         customizations: customizableParts.map(part => ({
           partId: part.id,
           partName: part.name,
