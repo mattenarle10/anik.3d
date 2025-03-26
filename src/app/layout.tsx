@@ -5,6 +5,7 @@ import Footer from "../components/layout/footer";
 import { SectionNavigationWrapper } from "../components/layout/section-navigation";
 import { CartProvider } from "@/contexts/CartContext";
 import { Toaster } from "react-hot-toast";
+import Script from "next/script";
 
 export const metadata: Metadata = {
   title: "Anik.3D - 3D Printed Figurines",
@@ -27,6 +28,12 @@ export default function RootLayout({
           </main>
           <Footer />
           <Toaster position="top-right" />
+          
+          {/* Freshchat Widget */}
+          <script
+            src='//au.fw-cdn.com/20903352/333760.js'
+            data-chat='true'
+          ></script>
         </CartProvider>
       </body>
     </html>
