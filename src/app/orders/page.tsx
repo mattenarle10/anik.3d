@@ -712,7 +712,7 @@ const OrdersPage = () => {
                           
                           <div className="mt-4 md:mt-0 flex flex-col items-end">
                             <span className="font-medium text-black text-lg mb-2">
-                              ${order.total_amount.toFixed(2)}
+                            ₱{order.total_amount.toFixed(2)}
                             </span>
                             <button 
                               onClick={(e) => {
@@ -938,9 +938,9 @@ const OrdersPage = () => {
                                           ) : null}
                                         </div>
                                         <div className="text-right">
-                                          <p className="text-sm font-medium text-gray-900">Base: ${item.price.toFixed(2)}</p>
+                                          <p className="text-sm font-medium text-gray-900">Base: ₱{item.price.toFixed(2)}</p>
                                           {item.customization_price && item.customization_price > 0 && (
-                                            <p className="text-xs text-blue-600">+${item.customization_price.toFixed(2)} customization</p>
+                                            <p className="text-xs text-blue-600">+₱{item.customization_price.toFixed(2)} customization</p>
                                           )}
                                           <p className="text-xs font-medium text-gray-900 mt-1">
                                             Subtotal: ${((item.price + (item.customization_price || 0)) * item.quantity).toFixed(2)}
@@ -955,17 +955,17 @@ const OrdersPage = () => {
                             <div className="bg-gray-50 p-4 rounded-md mt-4">
                               <div className="flex justify-between items-center border-b border-gray-200 pb-2 mb-2">
                                 <span className="font-montreal text-gray-600">Base Price</span>
-                                <span className="font-montreal text-gray-600">${order.items.reduce((sum, item) => sum + (item.price * item.quantity), 0).toFixed(2)}</span>
+                                <span className="font-montreal text-gray-600">₱{order.items.reduce((sum, item) => sum + (item.price * item.quantity), 0).toFixed(2)}</span>
                               </div>
                               {order.total_customization_price && order.total_customization_price > 0 && (
                                 <div className="flex justify-between items-center border-b border-gray-200 pb-2 mb-2">
                                   <span className="font-montreal text-gray-600">Customization</span>
-                                  <span className="font-montreal text-gray-600">${order.total_customization_price.toFixed(2)}</span>
+                                  <span className="font-montreal text-gray-600">₱{order.total_customization_price.toFixed(2)}</span>
                                 </div>
                               )}
                               <div className="flex justify-between items-center pt-2">
                                 <span className="font-montreal font-medium text-gray-900">Order Total</span>
-                                <span className="font-montreal font-medium text-gray-900 text-lg">${order.total_amount.toFixed(2)}</span>
+                                <span className="font-montreal font-medium text-gray-900 text-lg">₱{order.total_amount.toFixed(2)}</span>
                               </div>
                             </div>
                           </div>
@@ -1013,7 +1013,7 @@ const OrdersPage = () => {
                           
                           <div className="mt-4 md:mt-0 flex flex-col items-end">
                             <span className="font-medium text-black text-lg mb-2">
-                              ${order.total_amount.toFixed(2)}
+                            ₱{order.total_amount.toFixed(2)}
                             </span>
                             <button 
                               onClick={(e) => {
@@ -1239,12 +1239,12 @@ const OrdersPage = () => {
                                           ) : null}
                                         </div>
                                         <div className="text-right">
-                                          <p className="text-sm font-medium text-gray-900">Base: ${item.price.toFixed(2)}</p>
+                                          <p className="text-sm font-medium text-gray-900">Base: ₱{item.price.toFixed(2)}</p>
                                           {item.customization_price && item.customization_price > 0 && (
-                                            <p className="text-xs text-blue-600">+${item.customization_price.toFixed(2)} customization</p>
+                                            <p className="text-xs text-blue-600">+₱{item.customization_price.toFixed(2)} customization</p>
                                           )}
                                           <p className="text-xs font-medium text-gray-900 mt-1">
-                                            Subtotal: ${((item.price + (item.customization_price || 0)) * item.quantity).toFixed(2)}
+                                            Subtotal: ₱{((item.price + (item.customization_price || 0)) * item.quantity).toFixed(2)}
                                           </p>
                                         </div>
                                       </div>
@@ -1256,17 +1256,17 @@ const OrdersPage = () => {
                             <div className="bg-gray-50 p-4 rounded-md mt-4">
                               <div className="flex justify-between items-center border-b border-gray-200 pb-2 mb-2">
                                 <span className="font-montreal text-gray-600">Base Price</span>
-                                <span className="font-montreal text-gray-600">${order.items.reduce((sum, item) => sum + (item.price * item.quantity), 0).toFixed(2)}</span>
+                                <span className="font-montreal text-gray-600">₱{order.items.reduce((sum, item) => sum + (item.price * item.quantity), 0).toFixed(2)}</span>
                               </div>
                               {order.total_customization_price && order.total_customization_price > 0 && (
                                 <div className="flex justify-between items-center border-b border-gray-200 pb-2 mb-2">
                                   <span className="font-montreal text-gray-600">Customization</span>
-                                  <span className="font-montreal text-gray-600">${order.total_customization_price.toFixed(2)}</span>
+                                  <span className="font-montreal text-gray-600">₱{order.total_customization_price.toFixed(2)}</span>
                                 </div>
                               )}
                               <div className="flex justify-between items-center pt-2">
                                 <span className="font-montreal font-medium text-gray-900">Order Total</span>
-                                <span className="font-montreal font-medium text-gray-900 text-lg">${order.total_amount.toFixed(2)}</span>
+                                <span className="font-montreal font-medium text-gray-900 text-lg">₱{order.total_amount.toFixed(2)}</span>
                               </div>
                             </div>
                           </div>
