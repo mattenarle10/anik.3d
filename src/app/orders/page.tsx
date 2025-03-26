@@ -943,7 +943,7 @@ const OrdersPage = () => {
                                             <p className="text-xs text-blue-600">+₱{item.customization_price.toFixed(2)} customization</p>
                                           )}
                                           <p className="text-xs font-medium text-gray-900 mt-1">
-                                            Subtotal: ${((item.price + (item.customization_price || 0)) * item.quantity).toFixed(2)}
+                                            Subtotal: ₱{((item.price + (item.customization_price || 0)) * item.quantity).toFixed(2)}
                                           </p>
                                         </div>
                                       </div>
@@ -1282,25 +1282,28 @@ const OrdersPage = () => {
         
         {/* 3D Model Viewer Modal */}
         {modelViewerUrl && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-75">
-            <div className="bg-white w-full max-w-4xl h-[80vh] flex flex-col">
-              <div className="flex justify-between items-center p-4">
-                <h3 className="text-xl font-montreal font-medium">3D Model Viewer</h3>
+          <div className="fixed inset-0 z-50 flex items-center justify-center" style={{ backgroundColor: 'rgba(0, 0, 0, 0.5)', backdropFilter: 'blur(4px)' }}>
+            <div className="bg-white w-full max-w-4xl h-[80vh] flex flex-col rounded-lg overflow-hidden">
+              <div className="flex justify-between items-center p-3 border-b">
+                <h3 className="text-lg font-montreal">3D Model Viewer</h3>
                 <button 
                   onClick={closeModelViewer}
                   className="text-gray-500 hover:text-gray-700"
                 >
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                   </svg>
                 </button>
               </div>
               <div className="flex-grow bg-white relative">
                 <div className="absolute inset-0">
-                  <MiniModelViewer modelUrl={modelViewerUrl} size="large" />
+                  <MiniModelViewer 
+                    modelUrl={modelViewerUrl} 
+                    size="large" 
+                  />
                 </div>
-                <div className="absolute bottom-0 left-0 right-0 bg-black bg-opacity-50 text-white p-2 text-center">
-                  <p>Scroll to zoom • Click and drag to rotate the model</p>
+                <div className="absolute bottom-0 left-0 right-0 bg-black bg-opacity-30 text-white p-1.5 text-center text-sm">
+                  <p>Scroll to zoom • Click and drag to rotate</p>
                 </div>
               </div>
             </div>

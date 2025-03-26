@@ -26,6 +26,7 @@ const MiniModelViewer: React.FC<MiniModelViewerProps> = ({
     renderer?: THREE.WebGLRenderer;
     controls?: OrbitControls;
     frameId?: number;
+    isAnimating?: boolean;
   }>({});
   
   // Size classes based on the size prop
@@ -171,6 +172,9 @@ const MiniModelViewer: React.FC<MiniModelViewerProps> = ({
           // Render once after model is loaded
           updateRendererSize();
           renderer.render(scene, camera);
+          
+          // Start animation loop after model is loaded
+          startAnimationLoop();
         },
         undefined,
         (error) => {
@@ -190,6 +194,9 @@ const MiniModelViewer: React.FC<MiniModelViewerProps> = ({
             // Render the fallback cube
             updateRendererSize();
             renderer.render(scene, camera);
+            
+            // Start animation loop even with fallback cube
+            startAnimationLoop();
           }
         }
       );
@@ -198,22 +205,76 @@ const MiniModelViewer: React.FC<MiniModelViewerProps> = ({
     // Start loading the model
     loadModel(modelUrl);
     
-    // Since we're not animating, we only need to render once
-    const render = () => {
+    // Animation loop for responsive controls
+    const animate = () => {
+      if (!sceneRef.current.isAnimating) return;
+      
+      sceneRef.current.frameId = requestAnimationFrame(animate);
+      
+      if (controls) {
+        controls.update(); // Update controls in animation loop
+      }
+      
       if (renderer && scene && camera) {
         renderer.render(scene, camera);
       }
     };
     
+    // Start animation loop
+    const startAnimationLoop = () => {
+      if (!sceneRef.current.isAnimating) {
+        sceneRef.current.isAnimating = true;
+        animate();
+      }
+    };
+    
+    // Stop animation loop
+    const stopAnimationLoop = () => {
+      sceneRef.current.isAnimating = false;
+      if (sceneRef.current.frameId !== undefined) {
+        cancelAnimationFrame(sceneRef.current.frameId);
+      }
+    };
+    
+    // Handle wheel events for zooming
+    const handleWheel = (event: WheelEvent) => {
+      event.preventDefault();
+      
+      if (controls) {
+        // Adjust zoom based on wheel delta
+        const zoomDelta = event.deltaY * 0.001;
+        controls.zoomSpeed = 1.0;
+        
+        // Apply zoom
+        if (camera) {
+          const zoomFactor = 0.95;
+          if (event.deltaY > 0) {
+            // Zoom out
+            camera.position.multiplyScalar(1 / zoomFactor);
+          } else {
+            // Zoom in
+            camera.position.multiplyScalar(zoomFactor);
+          }
+          controls.update();
+        }
+      }
+    };
+    
+    // Add wheel event listener for zooming
+    if (containerRef.current) {
+      containerRef.current.addEventListener('wheel', handleWheel, { passive: false });
+    }
+    
     // Handle window resize
     const handleResize = () => {
       updateRendererSize();
-      render(); // Re-render after resize
+      if (renderer && scene && camera) {
+        renderer.render(scene, camera);
+      }
     };
     
     // Initial render and add event listeners
     updateRendererSize();
-    render();
     window.addEventListener('resize', handleResize);
     
     // Store references
@@ -221,12 +282,23 @@ const MiniModelViewer: React.FC<MiniModelViewerProps> = ({
       scene,
       camera,
       renderer,
-      controls
+      controls,
+      isAnimating: false
     };
+    
+    // Start animation loop
+    startAnimationLoop();
     
     // Cleanup
     return () => {
+      // Stop animation loop
+      stopAnimationLoop();
+      
+      // Remove event listeners
       window.removeEventListener('resize', handleResize);
+      if (containerRef.current) {
+        containerRef.current.removeEventListener('wheel', handleWheel);
+      }
       
       if (sceneRef.current.controls) {
         sceneRef.current.controls.dispose();
@@ -249,7 +321,7 @@ const MiniModelViewer: React.FC<MiniModelViewerProps> = ({
     <div 
       ref={containerRef}
       className={`${sizeClasses[size]} relative overflow-hidden w-full h-full`}
-      style={{ background: 'white' }}
+      style={{ background: 'white', cursor: 'grab' }}
     />
   );
 };
