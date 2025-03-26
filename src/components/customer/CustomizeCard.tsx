@@ -442,7 +442,7 @@ const CustomizeCard: React.FC<CustomizeCardProps> = ({
         {/* Price and Customize Button */}
         <div className="flex items-center justify-between mt-auto pt-3 border-t border-gray-100">
           <div className="flex flex-col">
-            <span className="text-lg font-bold text-gray-900 font-montreal">${price.toFixed(2)}</span>
+            <span className="text-lg font-bold text-gray-900 font-montreal">₱{price.toFixed(2)}</span>
 
           </div>
           

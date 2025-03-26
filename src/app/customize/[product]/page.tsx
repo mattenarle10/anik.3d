@@ -401,6 +401,19 @@ export default function CustomizePage() {
             <CustomizationPanel
               parts={customizableParts}
               onPartColorChange={handlePartColorChange}
+              onRandomize={(randomParts) => {
+                // Apply all random colors at once
+                console.log('Randomized colors:', randomParts);
+                // Show success toast when randomization is applied
+                toast.success('Random design applied!', {
+                  icon: '🎨',
+                  style: {
+                    borderRadius: '4px',
+                    background: '#333',
+                    color: '#fff',
+                  },
+                });
+              }}
               basePrice={product?.price || 0}
               additionalPrice={customizationPrice}
             />

@@ -119,6 +119,33 @@ export default function ProductDetailPage() {
       }
       return;
     }
+      // Create a gradient texture for background
+      function createGradientTexture() {
+        const canvas = document.createElement('canvas');
+        canvas.width = 512;
+        canvas.height = 512;
+        
+        const context = canvas.getContext('2d');
+        if (!context) return new THREE.Color(0x000000);
+        
+        // Create a radial gradient from dark gray center to black edges
+        const gradient = context.createRadialGradient(
+          256, 256, 80,  // Inner circle center x, y, radius (increased for more focused highlight)
+          256, 256, 350  // Outer circle center x, y, radius
+        );
+        
+        // Add color stops for a more dramatic radial gradient (darker)
+        gradient.addColorStop(0, '#222222');   // Darker center
+        gradient.addColorStop(0.3, '#111111'); // Very dark gray
+        gradient.addColorStop(1, '#000000');   // Pure black edges
+        
+        context.fillStyle = gradient;
+        context.fillRect(0, 0, 512, 512);
+        
+        const texture = new THREE.CanvasTexture(canvas);
+        texture.needsUpdate = true;
+        return texture;
+      }
 
     console.log(`[ProductDetail] Setting up 3D scene for model: ${product.model_url}`);
     setModelLoading(true);
@@ -126,7 +153,7 @@ export default function ProductDetailPage() {
 
     // Scene setup with pure black background
     const scene = new THREE.Scene();
-    scene.background = new THREE.Color(0x000000); // Pure black background
+    scene.background = createGradientTexture();
 
     // Camera setup with better positioning for detail view
     const camera = new THREE.PerspectiveCamera(
@@ -504,7 +531,7 @@ export default function ProductDetailPage() {
             <h1 className="text-3xl font-bold font-montreal mb-3 text-gray-900 text-center">{product.name}</h1>
             
             {/* Price */}
-            <div className="text-2xl font-montreal mb-5 text-gray-900 text-center">${product.price.toFixed(2)}</div>
+            <div className="text-2xl font-montreal mb-5 text-gray-900 text-center">₱{product.price.toFixed(2)}</div>
             
             {/* Availability */}
             <div className="mb-6 flex items-center justify-center">

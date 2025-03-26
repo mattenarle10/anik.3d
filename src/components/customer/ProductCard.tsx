@@ -392,7 +392,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
           {/* Price and Availability */}
           <div className="flex items-center justify-between mt-auto pt-3 border-t border-gray-100">
             <div>
-              <span className="text-lg font-bold text-gray-900 font-montreal">${price.toFixed(2)}</span>
+              <span className="text-lg font-bold text-gray-900 font-montreal">₱{price.toFixed(2)}</span>
               {quantity !== undefined && (
                 <span className="ml-2 text-xs font-montreal text-gray-500">
                   {quantity > 0 ? `${quantity} in stock` : 'Out of stock'}

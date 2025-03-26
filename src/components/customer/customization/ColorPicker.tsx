@@ -8,7 +8,8 @@ interface ColorPickerProps {
   presetColors?: string[];
 }
 
-const defaultPresetColors = [
+// Export the preset colors so they can be used by other components
+export const defaultPresetColors = [
   '#000000', '#FFFFFF', '#FF0000', '#00FF00', '#0000FF', 
   '#FFFF00', '#FF00FF', '#00FFFF', '#FFA500', '#800080',
   '#008080', '#800000', '#008000', '#000080', '#FFC0CB'
