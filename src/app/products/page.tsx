@@ -17,6 +17,7 @@ interface Product {
   category?: string;
   isNew?: boolean;
   isFeatured?: boolean;
+  quantity: number;
 }
 
 export default function ProductsPage() {
@@ -62,7 +63,8 @@ export default function ProductsPage() {
         model_url: product.model_url,
         category: determineCategory(product),
         isNew: isNewProduct(product),
-        isFeatured: isFeaturedProduct(product)
+        isFeatured: isFeaturedProduct(product),
+        quantity: product.quantity
       }));
       setProducts(formattedProducts);
     } catch (err) {
@@ -75,30 +77,65 @@ export default function ProductsPage() {
   
   // Helper functions to determine product attributes
   const determineCategory = (product: ApiProduct): string => {
-    // Logic to determine category - can be enhanced based on actual data
-    if (product.product_id.includes('new')) return 'new';
-    return 'popular';
+    // Extract category from product name or use default
+    const name = product.name.toLowerCase();
+    if (name.includes('cachet')) return 'cachet';
+    if (name.includes('tina')) return 'tina';
+    if (name.includes('annika')) return 'annika';
+    if (name.includes('steve')) return 'steve';
+    if (name.includes('adam')) return 'adam';
+    return 'other';
   };
   
   const isNewProduct = (product: ApiProduct): boolean => {
-    // Logic to determine if product is new - can be enhanced based on actual data
     return product.product_id.includes('new');
   };
   
   const isFeaturedProduct = (product: ApiProduct): boolean => {
-    // Logic to determine if product is featured - can be enhanced based on actual data
-    return product.product_id.includes('featured');
+    const name = product.name.toLowerCase();
+    // Mark specific products as featured based on their exact names
+    return (
+      name === 'sassy cachet' ||
+      name === 'walking tina' ||
+      name === 'crouching tina' ||
+      name === 'shy annika' ||
+      name === 'sad annika' ||
+      name === 'adam'
+    );
   };
+
+  // Get unique categories from products and sort them in the desired order
+  const categories = Array.from(new Set(products.map(product => determineCategory(product))))
+    .filter(cat => cat !== 'other')
+    .sort((a, b) => {
+      const order = ['cachet', 'tina', 'annika', 'steve', 'adam'];
+      return order.indexOf(a) - order.indexOf(b);
+    });
   
   // Filter products based on selected category and search term
   const filteredProducts = products
-    .filter(product => filter === 'all' || product.category === filter)
+    .filter(product => {
+      if (filter === 'popular') return false; // We'll handle popular products separately
+      return determineCategory(product) === filter;
+    })
     .filter(product => 
       searchTerm === '' || 
       product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       product.description.toLowerCase().includes(searchTerm.toLowerCase())
     );
-  
+
+  // Get random popular products (limited to 6)
+  const getRandomPopularProducts = () => {
+    const popularProducts = products.filter(isFeaturedProduct);
+    const shuffled = [...popularProducts].sort(() => 0.5 - Math.random());
+    return shuffled.slice(0, 6);
+  };
+
+  // Set initial filter to 'popular' when component mounts
+  useEffect(() => {
+    setFilter('popular');
+  }, []);
+
   return (
     <CustomerLayout userName={user?.name} activePage="products">
       <Banner 
@@ -150,16 +187,6 @@ export default function ProductsPage() {
         {/* Category Filter */}
         <div className="flex flex-wrap gap-2 mb-6">
           <button 
-            onClick={() => setFilter('all')}
-            className={`px-4 py-2 rounded-sm transition-colors font-montreal ${
-              filter === 'all' 
-                ? 'bg-black text-white' 
-                : 'bg-gray-100 text-gray-800 hover:bg-gray-200'
-            }`}
-          >
-            All
-          </button>
-          <button 
             onClick={() => setFilter('popular')}
             className={`px-4 py-2 rounded-sm transition-colors font-montreal ${
               filter === 'popular' 
@@ -169,22 +196,25 @@ export default function ProductsPage() {
           >
             Popular
           </button>
-          <button 
-            onClick={() => setFilter('new')}
-            className={`px-4 py-2 rounded-sm transition-colors font-montreal ${
-              filter === 'new' 
-                ? 'bg-black text-white' 
-                : 'bg-gray-100 text-gray-800 hover:bg-gray-200'
-            }`}
-          >
-            New
-          </button>
+          {categories.map(category => (
+            <button 
+              key={category}
+              onClick={() => setFilter(category)}
+              className={`px-4 py-2 rounded-sm transition-colors font-montreal capitalize ${
+                filter === category 
+                  ? 'bg-black text-white' 
+                  : 'bg-gray-100 text-gray-800 hover:bg-gray-200'
+              }`}
+            >
+              {category}
+            </button>
+          ))}
         </div>
       </div>
       
       {/* Product Grid */}
       <ProductGrid 
-        products={filteredProducts} 
+        products={filter === 'popular' ? getRandomPopularProducts() : filteredProducts} 
         isLoading={isLoading} 
         error={error} 
       />

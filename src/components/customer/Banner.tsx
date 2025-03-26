@@ -87,10 +87,10 @@ export default function Banner({
         
         {/* View All Products Button */}
         <Link 
-          href="/products#all"
+          href="/products?filter=popular"
           className="absolute bottom-6 flex items-center space-x-2 text-white hover:text-gray-200 transition-colors group"
         >
-          <span className="text-white text-sm font-montreal">View All Products</span>
+          <span className="text-white text-sm font-montreal">View Popular Products</span>
           <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-white animate-bounce group-hover:animate-none" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
           </svg>

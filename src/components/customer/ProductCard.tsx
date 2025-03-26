@@ -112,16 +112,15 @@ const ProductCard: React.FC<ProductCardProps> = ({
     modelContainerRef.current.appendChild(canvas);
     console.log('[ProductCard] Renderer added to DOM');
 
-    // Controls - always auto-rotate for better preview
+    // Controls - disable auto-rotation
     const controls = new OrbitControls(camera, renderer.domElement);
     controls.enableDamping = true;
-    controls.dampingFactor = 0.1; // Increased for smoother response
+    controls.dampingFactor = 0.1;
     controls.enableZoom = false;
     controls.enablePan = false;
-    controls.autoRotate = true; // Always auto-rotate for better preview
-    controls.autoRotateSpeed = 1.5; // Slower rotation for smoother appearance
+    controls.autoRotate = false; // Disable auto-rotation
     controls.target.set(0, 0, 0);
-    controls.update(); // Initial update to apply settings
+    controls.update();
 
     // Lighting setup for dark background
     // Stronger lighting to make model stand out against dark background
@@ -202,153 +201,87 @@ const ProductCard: React.FC<ProductCardProps> = ({
       return texture;
     }
 
-    // Load the model with timeout and error handling
-    console.log(`[ProductCard] Starting to load model from URL: ${model_url}`);
-    
-    // Set a timeout for loading
-    const loadingTimeout = setTimeout(() => {
-      if (loading) {
-        console.error('[ProductCard] Model loading timeout');
-        setError('Loading timeout - please try again');
-        setLoading(false);
-      }
-    }, 15000); // 15 second timeout
-    
+    // Load the model with error handling
     const loader = new GLTFLoader();
     
-    // Add a try-catch around the loader
     try {
-      // Fix TypeScript error by ensuring model_url is a string
       const modelUrlString = model_url as string;
       
       loader.load(
         modelUrlString,
         (gltf) => {
-          clearTimeout(loadingTimeout);
-          console.log('[ProductCard] Model loaded successfully', gltf);
+          if (!gltf.scene || !gltf.scene.children || gltf.scene.children.length === 0) {
+            setError('Model has no content');
+            setLoading(false);
+            return;
+          }
           
-          try {
-            // Make sure the model has content
-            if (!gltf.scene || !gltf.scene.children || gltf.scene.children.length === 0) {
-              throw new Error('Model has no content');
-            }
-            
-            // Optimize materials for better performance
-            gltf.scene.traverse((child) => {
-              if (child instanceof THREE.Mesh) {
-                if (child.material) {
-                  // Ensure materials render correctly
-                  child.material.side = THREE.FrontSide; // Use FrontSide for better performance
+          // Basic material setup to prevent shader issues
+          gltf.scene.traverse((child) => {
+            if (child instanceof THREE.Mesh) {
+              if (child.material) {
+                child.material.side = THREE.FrontSide;
+                child.material.needsUpdate = true;
+                // Ensure material is properly initialized
+                if (Array.isArray(child.material)) {
+                  child.material.forEach(mat => {
+                    if (mat) {
+                      mat.dispose();
+                      mat.needsUpdate = true;
+                    }
+                  });
+                } else {
+                  child.material.dispose();
                   child.material.needsUpdate = true;
-                  
-                  // Optimize materials
-                  if (Array.isArray(child.material)) {
-                    child.material.forEach(mat => {
-                      mat.roughness = 0.7; // Better default appearance
-                      mat.metalness = 0.3;
-                    });
-                  } else {
-                    child.material.roughness = 0.7;
-                    child.material.metalness = 0.3;
-                  }
-                }
-                
-                // Optimize geometry if possible
-                if (child.geometry) {
-                  child.geometry.computeBoundingSphere();
                 }
               }
-            });
-            
-            // Center and scale the model using a more reliable approach
-            const box = new THREE.Box3().setFromObject(gltf.scene);
-            
-            // Check if bounding box is valid
-            if (box.min.x === Infinity || box.max.x === -Infinity) {
-              throw new Error('Invalid model dimensions');
             }
-            
-            const center = box.getCenter(new THREE.Vector3());
-            const size = box.getSize(new THREE.Vector3());
-            
-            // Move the model to center
-            gltf.scene.position.x = -center.x;
-            gltf.scene.position.y = -center.y;
-            gltf.scene.position.z = -center.z;
-            
-            // Scale the model to fit the view
-            const maxDim = Math.max(size.x, size.y, size.z);
-            if (maxDim === 0) {
-              throw new Error('Model has zero dimensions');
-            }
-            
-            const scale = 2.0 / maxDim;
-            gltf.scene.scale.set(scale, scale, scale);
-            
-            // Slightly rotate the model for a better initial view
-            gltf.scene.rotation.y = Math.PI / 6; // 30 degrees
-            
-            console.log(`[ProductCard] Model centered and scaled by ${scale}`);
-            
-            // Add model to scene
-            modelRef.current = gltf.scene;
-            scene.add(gltf.scene);
+          });
+          
+          // Center and scale the model
+          const box = new THREE.Box3().setFromObject(gltf.scene);
+          const center = box.getCenter(new THREE.Vector3());
+          const size = box.getSize(new THREE.Vector3());
+          
+          gltf.scene.position.x = -center.x;
+          gltf.scene.position.y = -center.y;
+          gltf.scene.position.z = -center.z;
+          
+          const maxDim = Math.max(size.x, size.y, size.z);
+          if (maxDim === 0) {
+            setError('Model has zero dimensions');
             setLoading(false);
-            
-            // Render once without animation loop
-            renderer.render(scene, camera);
-            console.log('[ProductCard] Initial render complete');
-          } catch (err) {
-            console.error('[ProductCard] Error processing model:', err);
-            setError('Error processing model');
-            setLoading(false);
+            return;
           }
+          
+          const scale = 2.0 / maxDim;
+          gltf.scene.scale.set(scale, scale, scale);
+          
+          // Add model to scene
+          modelRef.current = gltf.scene;
+          scene.add(gltf.scene);
+          setLoading(false);
+          
+          // Single render
+          renderer.render(scene, camera);
         },
-        (xhr) => {
-          // Progress callback
-          const percent = Math.floor((xhr.loaded / xhr.total) * 100);
-          console.log(`[ProductCard] Loading progress: ${percent}%`);
-        },
+        undefined,
         (error) => {
-          clearTimeout(loadingTimeout);
-          console.error('[ProductCard] Error loading model:', error);
+          console.error('Error loading model:', error);
           setError('Failed to load 3D model');
           setLoading(false);
         }
       );
     } catch (err) {
-      clearTimeout(loadingTimeout);
-      console.error('[ProductCard] Exception during model loading:', err);
+      console.error('Exception during model loading:', err);
       setError('Exception during model loading');
       setLoading(false);
     }
 
-    // Animation loop - simplified to always rotate for better preview
-    const animate = () => {
-      if (!sceneRef.current.scene || !sceneRef.current.camera || !sceneRef.current.renderer) return;
-      
-      sceneRef.current.frameId = requestAnimationFrame(animate);
-      
-      // Update controls - always auto-rotate
-      if (sceneRef.current.controls) {
-        sceneRef.current.controls.update();
-      }
-      
-      sceneRef.current.renderer.render(sceneRef.current.scene, sceneRef.current.camera);
-    };
-    
-    animate();
-    console.log('[ProductCard] Animation loop started');
-
     // Cleanup
     return () => {
       console.log('[ProductCard] Cleaning up 3D scene');
-      clearTimeout(loadingTimeout);
       window.removeEventListener('resize', handleResize);
-      
-      if (sceneRef.current.frameId) {
-        cancelAnimationFrame(sceneRef.current.frameId);
-      }
       
       if (modelContainerRef.current && canvas.parentElement === modelContainerRef.current) {
         modelContainerRef.current.removeChild(canvas);
@@ -362,14 +295,13 @@ const ProductCard: React.FC<ProductCardProps> = ({
         sceneRef.current.controls.dispose();
       }
       
-      // Clear the scene
       if (modelRef.current && sceneRef.current.scene) {
         sceneRef.current.scene.remove(modelRef.current);
       }
       
       modelRef.current = null;
     };
-  }, [model_url, retryCount]);
+  }, [model_url]);
   
   return (
     <div className="group relative bg-white rounded-sm overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 flex flex-col h-full">
@@ -382,8 +314,8 @@ const ProductCard: React.FC<ProductCardProps> = ({
             </span>
           )}
           {isFeatured && (
-            <span className="bg-gray-800 text-white text-xs font-montreal px-2.5 py-1 rounded-sm">
-              FEATURED
+            <span className="bg-gradient-to-r from-yellow-200 to-yellow-300 text-black text-xs font-montreal px-2.5 py-1 rounded-sm">
+              POPULAR
             </span>
           )}
           {model_url && (

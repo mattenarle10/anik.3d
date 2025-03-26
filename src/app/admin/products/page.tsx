@@ -368,7 +368,7 @@ export default function AdminProducts() {
                         {product.category || 'default'}
                       </span>
                     </td>
-                    <td className="py-4 font-montreal text-black">${product.price.toFixed(2)}</td>
+                    <td className="py-4 font-montreal text-black">₱{product.price.toFixed(2)}</td>
                     <td className="py-4 font-montreal text-black">
                       <div className="flex items-center">
                         <span className={`px-2 py-1 text-xs rounded-sm ${
