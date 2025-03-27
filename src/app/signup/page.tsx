@@ -214,6 +214,13 @@ export default function Signup() {
               Login
             </Link>
           </div>
+          
+          <div className="mt-4 text-center text-sm border-t pt-4 border-gray-200">
+            <span className="text-gray-600">Want to use Cognito authentication?</span>{' '}
+            <Link href="/cognito-auth?cognito-mode=true" className="text-black font-medium hover:underline">
+              Sign up with Cognito
+            </Link>
+          </div>
         </form>
       </div>
     </div>

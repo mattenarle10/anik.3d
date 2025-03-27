@@ -405,7 +405,22 @@ const CartPage = () => {
                           
                           {item.stock !== undefined && (
                             <div className="text-xs text-gray-500 mt-1">
-                              {item.stock > 0 ? `${item.stock} in stock` : 'Out of stock'}
+                              {(() => {
+                                // Get all items with the same product ID (all variants)
+                                const sameProductItems = items.filter(i => i.productId === item.productId);
+                                
+                                // Calculate total quantity of this product in cart
+                                const totalQuantityInCart = sameProductItems.reduce((total, i) => total + i.quantity, 0);
+                                
+                                // For display purposes, we want to show the actual remaining stock
+                                // after accounting for all items of this product in the cart
+                                const availableStock = Math.max(0, item.stock - totalQuantityInCart + item.quantity);
+                                
+                                // Show both the available stock and the total stock
+                                return availableStock > 0 
+                                  ? `${availableStock} of ${item.stock} available` 
+                                  : 'Out of stock';
+                              })()}
                             </div>
                           )}
 

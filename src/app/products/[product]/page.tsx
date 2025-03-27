@@ -375,11 +375,15 @@ export default function ProductDetailPage() {
     setAddingToCart(true);
     
     try {
+      // Include stock information from the product
+      console.log('[ADD TO CART] Base product with stock:', product.quantity);
+      
       addItem({
         productId: product.product_id,
         name: product.name,
         price: product.price,
         quantity: 1,
+        stock: product.quantity, // Include the stock information from the API
         imageUrl: product.model_url ? undefined : product.image_url || `/images/products/${product.product_id}.jpg`,
         modelUrl: product.model_url || undefined,
         isCustomized: false,

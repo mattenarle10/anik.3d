@@ -5,11 +5,38 @@ import { defineAuth } from '@aws-amplify/backend';
  * @see https://docs.amplify.aws/gen2/build-a-backend/auth
  */
 export const auth = defineAuth({
-  // Use the simplest possible configuration to avoid type errors
-  // The default settings will create a Cognito User Pool with email login
   loginWith: {
     email: true,
-  }
+  },
+  userAttributes: {
+    email: {
+      required: true,
+    },
+    // Optional attributes that can be added
+    name: {
+      required: false,
+    },
+    shipping_address: {
+      required: false,
+    },
+    phone_number: {
+      required: false,
+    },
+    date_created: {
+      required: false,
+    },
+  },
+  // Configure verification method
+  verificationEmailSubject: 'Your verification code',
+  signUpVerificationMethod: 'code',
+  // Configure password requirements
+  passwordPolicy: {
+    minLength: 8,
+    requireLowercase: true,
+    requireUppercase: true,
+    requireNumbers: true,
+    requireSpecialCharacters: true,
+  },
 });
 
 // Note: Additional configuration like custom attributes can be added
