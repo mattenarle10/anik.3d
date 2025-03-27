@@ -394,7 +394,7 @@ export default function ViewOrderItemsModal({
                         </div>
                         {item.price_adjustment && item.price_adjustment > 0 && (
                           <div className="text-gray-600 mt-1">
-                            Customization cost: +${item.price_adjustment.toFixed(2)}
+                            Customization cost: +₱{item.price_adjustment.toFixed(2)}
                           </div>
                         )}
                       </div>
@@ -408,10 +408,10 @@ export default function ViewOrderItemsModal({
                   {item.quantity}
                 </div>
                 <div className="col-span-2 text-right self-center font-montreal text-black">
-                  ${item.price.toFixed(2)}
+                ₱{item.price.toFixed(2)}
                 </div>
                 <div className="col-span-2 text-right self-center font-montreal font-medium text-black">
-                  ${(item.price * item.quantity).toFixed(2)}
+                ₱{(item.price * item.quantity).toFixed(2)}
                 </div>
               </div>
             ))}
@@ -429,19 +429,19 @@ export default function ViewOrderItemsModal({
               <>
                 <div className="flex justify-between mb-2">
                   <span className="font-montreal text-black">Base Price:</span>
-                  <span className="font-montreal text-black">${baseTotal.toFixed(2)}</span>
+                  <span className="font-montreal text-black">₱{baseTotal.toFixed(2)}</span>
                 </div>
                 
                 {customizationTotal > 0 && (
                   <div className="flex justify-between mb-2 text-gray-700">
                     <span className="font-montreal">Customization:</span>
-                    <span className="font-montreal">${customizationTotal.toFixed(2)}</span>
+                    <span className="font-montreal text-black">₱{customizationTotal.toFixed(2)}</span>
                   </div>
                 )}
                 
                 <div className="flex justify-between font-bold mt-4 pt-2 border-t border-gray-200">
                   <span className="font-montreal text-black">Total:</span>
-                  <span className="font-montreal text-black">${total_amount.toFixed(2)}</span>
+                  <span className="font-montreal text-black">₱{total_amount.toFixed(2)}</span>
                 </div>
               </>
             );

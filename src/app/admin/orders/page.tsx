@@ -626,7 +626,7 @@ export default function AdminOrders() {
                       </div>
                     </td>
                     <td className="py-4 font-montreal text-black font-bold">
-                      ${order.total_amount.toFixed(2)}
+                    ₱{order.total_amount.toFixed(2)}
                     </td>
                     <td className="py-4 font-montreal">
                       <div className="flex items-center">
