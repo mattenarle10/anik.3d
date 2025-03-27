@@ -13,12 +13,13 @@ import {
 } from '@aws-amplify/ui-react';
 import Image from 'next/image';
 import { useRouter, useSearchParams } from 'next/navigation';
+import { Suspense } from 'react';
 import '@aws-amplify/ui-react/styles.css';
 
 // Import Amplify and our config
 import { Amplify } from 'aws-amplify';
-import { signUp } from 'aws-amplify/auth';
-import { configureAmplify } from '../utils/amplify-config';
+//import { signUp } from 'aws-amplify/auth';
+//import { configureAmplify } from '../utils/amplify-config';
 
 // Custom theme to match the application's design
 const theme = {
@@ -56,7 +57,7 @@ const theme = {
   },
 };
 
-const CognitoAuthPage = () => {
+function CognitoAuthContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [isMounted, setIsMounted] = useState(false);
@@ -207,6 +208,12 @@ const CognitoAuthPage = () => {
       </div>
     </div>
   );
-};
+}
 
-export default CognitoAuthPage;
+export default function CognitoAuthPage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <CognitoAuthContent />
+    </Suspense>
+  );
+}
