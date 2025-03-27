@@ -75,7 +75,9 @@ export default function Footer() {
           {/* Developer Links - Vercel-like buttons */}
           <div className="flex flex-wrap gap-3 mt-2 md:mt-0">
             <a 
-              href="/developer-manual" 
+              href="https://anik3d-manual.vercel.app/main/pages" 
+              target="_blank"
+              rel="noopener noreferrer"
               className="inline-flex items-center gap-1 px-3 py-1.5 bg-gray-800 border border-gray-700 rounded-md hover:bg-gray-700 transition-colors text-xs font-medium text-white"
             >
               <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -89,7 +91,9 @@ export default function Footer() {
             </a>
             
             <a 
-              href="/developer-journal" 
+              href="https://anik3d-manual.vercel.app/main/journal" 
+              target="_blank"
+              rel="noopener noreferrer"
               className="inline-flex items-center gap-1 px-3 py-1.5 bg-gray-800 border border-gray-700 rounded-md hover:bg-gray-700 transition-colors text-xs font-medium text-white"
             >
               <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">

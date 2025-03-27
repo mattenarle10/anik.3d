@@ -30,7 +30,9 @@ export default function AboutSection() {
             {/* Developer Links - Vercel-like buttons */}
             <div className="flex flex-wrap gap-4 mt-8">
               <a 
-                href="/developer-manual" 
+                href="https://anik3d-manual.vercel.app/main/pages" 
+                target="_blank"
+                rel="noopener noreferrer"
                 className="inline-flex items-center gap-2 px-4 py-2 bg-white border border-gray-200 rounded-md hover:bg-gray-50 transition-colors shadow-sm text-sm font-medium text-gray-800"
               >
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -44,7 +46,9 @@ export default function AboutSection() {
               </a>
               
               <a 
-                href="/developer-journal" 
+                href="https://anik3d-manual.vercel.app/main/journal" 
+                target="_blank"
+                rel="noopener noreferrer"
                 className="inline-flex items-center gap-2 px-4 py-2 bg-white border border-gray-200 rounded-md hover:bg-gray-50 transition-colors shadow-sm text-sm font-medium text-gray-800"
               >
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
